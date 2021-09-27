@@ -15,7 +15,7 @@ else:
 
 
 setup(name='ImageScraper',
-      version='2.0.7',
+      version='2.0.8',
       install_requires= requirement_list,
       author='Anantha Natarajan S',
       author_email='sananthanatarajan12@gmail.com',

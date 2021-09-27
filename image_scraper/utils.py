@@ -37,7 +37,7 @@ class ImageScraper(object):
         """ Gets the arguments from the command line. """
 
         parser = argparse.ArgumentParser(
-            description='Downloads images from given URL')
+            description='Downloads images from given URL (homemade)')
         parser.add_argument('url2scrape', nargs=1, help="URL to scrape")
         parser.add_argument('-m', '--max-images', type=int, default=None,
                             help="Limit on number of images\n")
@@ -181,7 +181,7 @@ class ImageScraper(object):
             raise DirectoryCreateError
         return True
 
-    def download_image(self, img_url):
+    def download_image(self, img_url, status_flags):
         """ Downloads a single image.
 
             Downloads img_url using self.page_url as base.
@@ -199,7 +199,8 @@ class ImageScraper(object):
         if img_url[-3:] == "svg" or (int(img_request.headers['content-length']) > self.min_filesize and\
                                      int(img_request.headers['content-length']) < self.max_filesize):
             img_content = img_request.content
-            with open(os.path.join(self.download_path, img_url.split('/')[-1]), 'wb') as f:
+            save_path = os.path.join(self.download_path, status_flags['count'] + 1, img_url.split('.')[-1])
+            with open(save_path, 'wb') as f:
                 byte_image = bytes(img_content)
                 f.write(byte_image)
         else:
@@ -220,7 +221,7 @@ def download_worker_fn(scraper, img_url, pbar, status_flags, status_lock):
     failed = False
     size_failed = False
     try:
-        scraper.download_image(img_url)
+        scraper.download_image(img_url, status_flags)
     except ImageDownloadError:
         failed = True
     except ImageSizeError:
